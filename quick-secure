@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright 2014, Timothy Marcinowski (marshyski@gmail.com), USA
+# Copyright 2014, Timothy Marcinowski (marshyski@gmail.com)j, USA
 # Web site: https://github.com/marshyski/quick-secure
 #
 # Quick NIX Secure Script comes with ABSOLUTELY NO WARRANTY. This is free
@@ -153,6 +153,7 @@ if [[ `cat /etc/cron.deny 2>/dev/null` = "" ]]; then
   rm -f /etc/cron.deny
 fi
 
+echo "changing permissions..."
 
 chmod -f 0700 /etc/cron.monthly/*
 chmod -f 0700 /etc/cron.weekly/*
@@ -181,8 +182,8 @@ chown -f root:root /var/crash
 chown -f root:root /var/cache/mod_proxy
 chown -f root:root /var/lib/dav
 chown -f root:root /usr/bin/lockfile
-chown -f rpcuser:rpcuser /var/lib/nfs/statd
-chown -f adm:adm /var/adm
+#chown -f rpcuser:rpcuser /var/lib/nfs/statd
+#chown -f adm:adm /var/adm
 chmod -f 0600 /var/crash
 chown -f root:root /bin/mail
 chmod -f 0700 /sbin/reboot
@@ -395,9 +396,10 @@ chmod -f 1777 /var/mail
 chmod -f 1777 /var/spool/uucppublic
 
 
-#Set all files in ``.ssh`` to ``0600``
-chmod -Rf 0600 `find / -noleaf 2>/dev/null | grep -v '/net\|/proc' | grep '\.ssh$'`
+echo "done changing permissions..."
 
+#Set all files in ``.ssh`` to ``0600``
+chmod -Rf 0600 `find ~/.ssh -noleaf 2>/dev/null`
 
 #Disable ctrl-alt-delete RHEL 6+
 if [[ -f /etc/init/control-alt-delete.conf ]]; then
@@ -414,6 +416,7 @@ if [[ -f /etc/inittab ]]; then
   fi
 fi
 
+echo "removing security related packages  ..."
 
 #Remove security related packages
 if [[ -f /bin/rpm ]]; then
@@ -430,8 +433,10 @@ if [[ -f /bin/rpm ]]; then
 fi
 
 if [[ `which apt-get 2>/dev/null` != "" ]]; then
-  apt-get autoremove -y netcat-openbsd 2>/dev/null
-  apt-get autoremove -y vsftpd 2>/dev/null
+  # affects ubuntu-minimal
+  #apt-get autoremove -y netcat-openbsd 2>/dev/null ... needed by ubuntu-minimal
+  # need my ftp server
+  # apt-get autoremove -y vsftpd 2>/dev/null
   apt-get autoremove -y nmap 2>/dev/null
   apt-get autoremove -y telnetd 2>/dev/null
   apt-get autoremove -y rdate 2>/dev/null
@@ -442,6 +447,7 @@ if [[ `which apt-get 2>/dev/null` != "" ]]; then
 fi
 
 
+echo "removing uneedded users ..."
 #Account management and cleanup
 if [[ `which userdel 2>/dev/null` != "" ]]; then
   userdel -f games 2>/dev/null
@@ -505,7 +511,7 @@ fi
 #/home
 #sed -i "s/\( \/home.*`grep " \/home " /etc/fstab | awk '{print $4}'`\)/\1,nodev,nosuid/" /etc/fstab
 
-
+echo "misc setting ..."
 #Misc settings and permissions
 chmod -Rf o-w /usr/local/src/*
 rm -f /etc/security/console.perms
