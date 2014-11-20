@@ -398,8 +398,8 @@ chmod -f 1777 /var/spool/uucppublic
 
 echo "done changing permissions..."
 
-#Set all files in ``.ssh`` to ``0600``
-chmod -Rf 0600 `find ~/.ssh -noleaf 2>/dev/null`
+#Set all files in ``.ssh`` to ``600``
+chmod 700 ~/.ssh && chmod 600 ~/.ssh/*
 
 #Disable ctrl-alt-delete RHEL 6+
 if [[ -f /etc/init/control-alt-delete.conf ]]; then
